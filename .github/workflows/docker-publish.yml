@@ -2,9 +2,9 @@ name: Build, Scan and Push Docker Image
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - 'v*'
+  # push:
+  #   tags:
+  #     - 'v*'
   release:
     types: [published]
 
@@ -43,30 +43,30 @@ jobs:
             type=ref,event=tag
             type=raw,value=latest,enable=${{ github.event_name == 'release' }}
 
-      # 3. Compilar la imatge (sense pujar-la encara)
-      # Utilitzem 'load: true' per exportar-la al dimoni Docker del runner
-      - name: Build Docker image locally
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          load: true 
-          tags: local_test_image:latest
+      # # 3. Compilar la imatge (sense pujar-la encara)
+      # # Utilitzem 'load: true' per exportar-la al dimoni Docker del runner
+      # - name: Build Docker image locally
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     load: true 
+      #     tags: local_test_image:latest
 
-      # 4. Escaneig amb Trivy
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'local_test_image:latest'
-          format: 'sarif' # Format compatible amb GitHub Security
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH' # Només ens aturarem per vulnerabilitats greus
+      # # 4. Escaneig amb Trivy
+      # - name: Run Trivy vulnerability scanner
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: 'local_test_image:latest'
+      #     format: 'sarif' # Format compatible amb GitHub Security
+      #     output: 'trivy-results.sarif'
+      #     severity: 'CRITICAL,HIGH' # Només ens aturarem per vulnerabilitats greus
 
-      # 5. Carregar resultats a GitHub Security (opcional però molt recomanat)
-      - name: Upload Trivy scan results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4
-        if: always() # Carrega els resultats encara que es trobin vulnerabilitats
-        with:
-          sarif_file: 'trivy-results.sarif'
+      # # 5. Carregar resultats a GitHub Security (opcional però molt recomanat)
+      # - name: Upload Trivy scan results to GitHub Security
+      #   uses: github/codeql-action/upload-sarif@v4
+      #   if: always() # Carrega els resultats encara que es trobin vulnerabilitats
+      #   with:
+      #     sarif_file: 'trivy-results.sarif'
 
       # 6. Push final
       # Si l'escaneig de dalt falla (opcionalment), aquest pas no s'executaria
