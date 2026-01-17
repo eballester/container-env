@@ -63,7 +63,7 @@ jobs:
 
       # 5. Carregar resultats a GitHub Security (opcional però molt recomanat)
       - name: Upload Trivy scan results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always() # Carrega els resultats encara que es trobin vulnerabilitats
         with:
           sarif_file: 'trivy-results.sarif'
